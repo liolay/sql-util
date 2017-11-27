@@ -32,9 +32,9 @@ public class MySqlInsertTenantOptimizer extends AbstractMysqlTenantASTVisitorAda
             for (SQLInsertStatement.ValuesClause valuesClause : x.getValuesList()) {
                 SQLExpr merchantIdValue;
                 if ("String".equals(tenantColumnType)) {
-                    merchantIdValue = new MySqlCharExpr((String) TC.getTenantId());
+                    merchantIdValue = new MySqlCharExpr((String) TC.get());
                 } else {
-                    merchantIdValue = new SQLIntegerExpr((Number) TC.getTenantId());
+                    merchantIdValue = new SQLIntegerExpr((Number) TC.get());
                 }
                 if (!valuesClause.getValues().contains(merchantIdValue)) {
                     valuesClause.addValue(merchantIdValue);

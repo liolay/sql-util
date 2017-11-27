@@ -38,9 +38,9 @@ public class MySqlUpdateTenantOptimizer extends AbstractMysqlTenantASTVisitorAda
 
         SQLExpr rightExpr;
         if ("String".equals(tenantColumnType)) {
-            rightExpr = new MySqlCharExpr((String) TC.getTenantId());
+            rightExpr = new MySqlCharExpr((String) TC.get());
         } else {
-            rightExpr = new SQLIntegerExpr((Number) TC.getTenantId());
+            rightExpr = new SQLIntegerExpr((Number) TC.get());
         }
         SQLBinaryOpExpr sqlBinaryOpExpr = new SQLBinaryOpExpr(
                 leftExpr,
