@@ -1,5 +1,6 @@
-package cn.ocoop.framework.sql;
+package cn.ocoop.framework.sql.tenant;
 
+import cn.ocoop.framework.sql.TC;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.expr.*;
@@ -8,24 +9,23 @@ import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlCharExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 /**
- * Created by liolay on 2017/11/7.
+ * Created by liolay on 2017/11/24.
  */
-public class MySqlUpdateTenantOptimizer extends AbstractMysqlTenantASTVisitorAdapter {
-    public MySqlUpdateTenantOptimizer(String tenantColumn, String tenantColumnType) {
+public class MySqlSelectTenantOptimizer extends AbstractMysqlTenantASTVisitorAdapter {
+
+    public MySqlSelectTenantOptimizer(String tenantColumn, String tenantColumnType) {
         super(tenantColumn, tenantColumnType);
     }
 
-    @Override
-    public boolean visit(MySqlUpdateStatement x) {
+    public boolean visit(MySqlSelectQueryBlock x) {
         super.visit(x);
 
-        SQLExprTableSource sqlTableSource = recursiveGetOwner(x.getTableSource());
+        SQLExprTableSource sqlTableSource = recursiveGetOwner(x.getFrom());
         if (sqlTableSource == null) return true;
 
         SQLExpr where = x.getWhere();
@@ -33,7 +33,7 @@ public class MySqlUpdateTenantOptimizer extends AbstractMysqlTenantASTVisitorAda
         if (StringUtils.isNotBlank(sqlTableSource.getAlias())) {
             leftExpr = new SQLPropertyExpr(sqlTableSource.getAlias(), tenantColumn);
         } else {
-            leftExpr = new SQLIdentifierExpr(tenantColumn);
+            leftExpr = new SQLIdentifierExpr(tenantColumnType);
         }
 
         SQLExpr rightExpr;
@@ -48,7 +48,6 @@ public class MySqlUpdateTenantOptimizer extends AbstractMysqlTenantASTVisitorAda
                 rightExpr
         );
 
-
         boolean conditionExist = false;
         if (where != null) {
             List<SQLObject> wheres = where.getChildren();
@@ -58,12 +57,6 @@ public class MySqlUpdateTenantOptimizer extends AbstractMysqlTenantASTVisitorAda
             x.addCondition(sqlBinaryOpExpr);
         }
         return true;
-    }
-
-
-    @Override
-    public boolean visit(MySqlSelectQueryBlock x) {
-        return new MySqlSelectTenantOptimizer(tenantColumn,tenantColumnType).visit(x);
     }
 
     public SQLExprTableSource recursiveGetOwner(SQLTableSource sqlTableSource) {

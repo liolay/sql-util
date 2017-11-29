@@ -1,5 +1,6 @@
-package cn.ocoop.framework.sql;
+package cn.ocoop.framework.sql.tenant;
 
+import cn.ocoop.framework.sql.TC;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;

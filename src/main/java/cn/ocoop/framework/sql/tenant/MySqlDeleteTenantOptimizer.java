@@ -1,5 +1,6 @@
-package cn.ocoop.framework.sql;
+package cn.ocoop.framework.sql.tenant;
 
+import cn.ocoop.framework.sql.TC;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLObject;
 import com.alibaba.druid.sql.ast.expr.*;
@@ -65,7 +66,7 @@ public class MySqlDeleteTenantOptimizer extends AbstractMysqlTenantASTVisitorAda
 
     @Override
     public boolean visit(MySqlSelectQueryBlock x) {
-        return new MySqlSelectTenantOptimizer(tenantColumn,tenantColumnType).visit(x);
+        return new MySqlSelectTenantOptimizer(tenantColumn, tenantColumnType).visit(x);
     }
 
 

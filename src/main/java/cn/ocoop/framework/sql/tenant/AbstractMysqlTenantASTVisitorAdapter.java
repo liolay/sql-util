@@ -1,5 +1,6 @@
-package cn.ocoop.framework.sql;
+package cn.ocoop.framework.sql.tenant;
 
+import cn.ocoop.framework.sql.SqlOptimizer;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlASTVisitorAdapter;
 
 public abstract class AbstractMysqlTenantASTVisitorAdapter extends MySqlASTVisitorAdapter implements SqlOptimizer {
