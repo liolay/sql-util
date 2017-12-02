@@ -16,6 +16,8 @@ public class MySqlReplaceSelectItemToCountOptimizer extends MySqlASTVisitorAdapt
     @Override
     public boolean visit(MySqlSelectQueryBlock x) {
         super.visit(x);
+
+        if (hasSQLVariantRefExpr) return true;
         for (SQLSelectItem sqlSelectItem : x.getSelectList()) {
             if (sqlSelectItem.getExpr() instanceof SQLVariantRefExpr) {
                 hasSQLVariantRefExpr = true;
@@ -31,8 +33,14 @@ public class MySqlReplaceSelectItemToCountOptimizer extends MySqlASTVisitorAdapt
 
     @Override
     public String optimize(String sql) {
+        MySqlGroupByMarkOptimizer mySqlGroupByMarkOptimizer = new MySqlGroupByMarkOptimizer();
+        mySqlGroupByMarkOptimizer.optimize(sql);
+        if (mySqlGroupByMarkOptimizer.hasGroupByClause) {
+            return "SELECT COUNT(1) FROM (" + sql + ") A";
+        }
         String optimizedSql = SqlOptimizer.super.optimize(sql);
         if (hasSQLVariantRefExpr) return "SELECT COUNT(1) FROM (" + optimizedSql + ") A";
+
         return optimizedSql;
     }
 }
