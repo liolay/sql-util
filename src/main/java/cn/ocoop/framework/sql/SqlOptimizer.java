@@ -4,23 +4,21 @@ import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 import com.alibaba.druid.util.JdbcUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by liolay on 2017/11/24.
  */
 public interface SqlOptimizer extends SQLASTVisitor {
-    default List<String> optimize(String sql) {
-        List<String> optimizedSql = new ArrayList<>();
-
+    default String optimize(String sql) {
         List<SQLStatement> sqlStatements = SQLUtils.parseStatements(sql, JdbcUtils.MYSQL);
-        for (SQLStatement sqlStatement : sqlStatements) {
+        if (CollectionUtils.isNotEmpty(sqlStatements)) {
+            SQLStatement sqlStatement = sqlStatements.get(0);
             sqlStatement.accept(this);
-            optimizedSql.add(sqlStatement.toString());
+            return sqlStatement.toString();
         }
-
-        return optimizedSql;
+        return sql;
     }
 }
